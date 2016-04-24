@@ -27,47 +27,43 @@ public class LoginServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String usuario = request.getParameter("username");
-		String password = request.getParameter("password");
-		
-		String respuesta = "";
-		if (usuario.equals("pi") && password.equals("123")){
-			respuesta = "<h1>Login exitoso del usuario " + usuario + "</h1>";
-		}else{
-			respuesta = "<h1>Error en login</h1>";
-		}
-		
-		PrintWriter out = response.getWriter();
-		out.print("<html>");
-		out.print("<body>");
-		out.print(respuesta);
-		out.print("<div>Petición de tipo GETTTT</div>");
-		out.print("</body>");
-		out.print("</html>");
+		response.sendError(405);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String usuario = request.getParameter("username");
-		String password = request.getParameter("password");
-		
-		String respuesta = "";
-		if (usuario.equals("pi") && password.equals("123")){
-			respuesta = "<h1>Login exitoso del usuario " + usuario + "</h1>";
+		if (request.getSession(false) == null){
+			// No existe una sesión abierta
+			String usuario = request.getParameter("username");
+			String password = request.getParameter("password");
+			
+			String respuesta = "";
+			if (usuario.equals("pi") && password.equals("123")){
+				request.getSession().setAttribute("usuario", usuario);
+				respuesta = "<h1>Login exitoso del usuario " + usuario + "</h1>";
+			}else{
+				respuesta = "<h1>Error en login</h1>";
+			}
+			
+			PrintWriter out = response.getWriter();
+			out.print("<html>");
+			out.print("<body>");
+			out.print(respuesta);
+			out.print("<div>Petición de tipo POST</div>");
+			out.print("</body>");
+			out.print("</html>");
 		}else{
-			respuesta = "<h1>Error en login</h1>";
+			PrintWriter out = response.getWriter();
+			out.print("<html>");
+			out.print("<body>");
+			out.print("<h1>Ya hay una sesión iniciada con el usuario " + 
+					request.getSession().getAttribute("usuario") + "</h1>");
+			out.print("<div>Petición de tipo POST</div>");
+			out.print("</body>");
+			out.print("</html>");
 		}
-		
-		PrintWriter out = response.getWriter();
-		out.print("<html>");
-		out.print("<body>");
-		out.print(respuesta);
-		out.print("<div>Petición de tipo POST</div>");
-		out.print("</body>");
-		out.print("</html>");
 	}
 
 }
