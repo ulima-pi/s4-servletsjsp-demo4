@@ -3,6 +3,7 @@ package pe.edu.ulima.vetguide;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -34,36 +35,24 @@ public class LoginServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getSession(false) == null){
-			// No existe una sesión abierta
-			String usuario = request.getParameter("username");
-			String password = request.getParameter("password");
-			
-			String respuesta = "";
-			if (usuario.equals("pi") && password.equals("123")){
-				request.getSession().setAttribute("usuario", usuario);
-				respuesta = "<h1>Login exitoso del usuario " + usuario + "</h1>";
-			}else{
-				respuesta = "<h1>Error en login</h1>";
-			}
-			
-			PrintWriter out = response.getWriter();
-			out.print("<html>");
-			out.print("<body>");
-			out.print(respuesta);
-			out.print("<div>Petición de tipo POST</div>");
-			out.print("</body>");
-			out.print("</html>");
-		}else{
-			PrintWriter out = response.getWriter();
-			out.print("<html>");
-			out.print("<body>");
-			out.print("<h1>Ya hay una sesión iniciada con el usuario " + 
-					request.getSession().getAttribute("usuario") + "</h1>");
-			out.print("<div>Petición de tipo POST</div>");
-			out.print("</body>");
-			out.print("</html>");
+		String usuario = request.getParameter("username");
+		String password = request.getParameter("password");
+
+		if (usuario.equals("pi") && password.equals("123")) {
+			request.getSession().setAttribute("usuario", usuario);
+
+			RequestDispatcher rd = request.getRequestDispatcher("exito.jsp");
+			request.setAttribute("usuario", usuario);
+			request.setAttribute("metodo", "POST");
+			rd.forward(request, response);
+
+		} else {
+			RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+			request.setAttribute("metodo", "POST");
+			rd.forward(request, response);
 		}
+
+
 	}
 
 }
